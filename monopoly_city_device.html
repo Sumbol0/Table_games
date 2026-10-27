@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17191d">
+<title>Monopoly City — электронный блок</title>
+<style>
+  :root { color-scheme: dark; --bg:#17191d; --panel:#262a30; --ink:#f5f5f2; --muted:#aeb4bd; --red:#ed342f; --orange:#ef8c27; }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; min-height:100vh; padding:22px 16px max(22px, env(safe-area-inset-bottom));
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at top, #343941 0%, var(--bg) 58%);
+    color:var(--ink); font-family:Arial,Helvetica,sans-serif;
+  }
+  .device { width:min(100%,390px); border:1px solid #4a4f57; border-radius:30px; padding:22px;
+    background:linear-gradient(145deg,#30343b,#1c1f24 65%); box-shadow:0 20px 55px #0008,inset 0 1px #ffffff18; }
+  .brand { text-align:center; font-weight:900; font-style:italic; letter-spacing:1.4px; font-size:22px; }
+  .brand span { color:var(--red); }
+  .subtitle { text-align:center; color:var(--muted); font-size:11px; letter-spacing:2px; margin-top:5px; }
+  .screen { margin:24px 0 18px; min-height:170px; padding:20px 14px; border-radius:14px;
+    background:#e8e6d9; color:#25272b; border:7px solid #111316; text-align:center;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; }
+  .screen-label { font-size:11px; letter-spacing:2px; font-weight:bold; color:#555; }
+  .result { font-size:76px; line-height:1.05; font-weight:900; margin:8px 0; }
+  .result.train { font-size:56px; }
+  .message { min-height:20px; font-size:13px; color:#45474b; }
+  .buttons { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  button { min-height:110px; border:0; border-radius:17px; color:white; font:inherit; font-weight:900;
+    cursor:pointer; box-shadow:inset 0 -5px #0003,0 5px 0 #111; padding:14px 8px; touch-action:manipulation; }
+  button:active { transform:translateY(3px); box-shadow:inset 0 -2px #0003,0 2px 0 #111; }
+  button:focus-visible { outline:3px solid white; outline-offset:4px; }
+  .build { background:linear-gradient(#ef9a35,#cf6717); }
+  .auction { background:linear-gradient(#f0524b,#bd2425); }
+  .icon { display:block; font-size:29px; margin-bottom:8px; }
+  .button-sub { display:block; font-size:10px; letter-spacing:1px; margin-top:5px; opacity:.85; }
+  .timer-area { margin-top:17px; padding:15px; border-radius:14px; background:#111316; text-align:center; }
+  .timer { font-size:39px; font-weight:900; font-variant-numeric:tabular-nums; }
+  .timer-note { font-size:12px; color:var(--muted); min-height:18px; margin:4px 0 12px; }
+  .timer-actions { display:flex; gap:9px; }
+  .timer-actions button { min-height:42px; flex:1; border-radius:9px; background:#41464f; box-shadow:none; font-size:13px; }
+  .timer-actions button:active { transform:scale(.98); }
+  .footer { color:#939aa4; text-align:center; font-size:10px; line-height:1.5; margin:18px 4px 0; }
+  .flash { animation:flash .5s ease-in-out infinite alternate; }
+  @keyframes flash { from { color:#ffaaa5; } to { color:#fff; } }
+  @media (prefers-reduced-motion:reduce) { .flash { animation:none; } button { transition:none; } }
+</style>
+</head>
+<body>
+<main class="device" aria-label="Электронный блок Monopoly City">
+  <div class="brand">MONOPOLY <span>CITY</span></div>
+  <div class="subtitle">ELECTRONIC TRADING UNIT</div>
+
+  <section class="screen" aria-live="polite">
+    <div class="screen-label" id="screenLabel">READY</div>
+    <div class="result" id="result">—</div>
+    <div class="message" id="message">Нажми BUILD для результата строительства</div>
+  </section>
+
+  <div class="buttons">
+    <button class="build" id="buildBtn" type="button">
+      <span class="icon">🏗️</span>BUILD
+      <span class="button-sub">СТРОИТЕЛЬСТВО</span>
+    </button>
+    <button class="auction" id="auctionBtn" type="button">
+      <span class="icon">⏱</span>AUCTION
+      <span class="button-sub">АУКЦИОН · 50 СЕК.</span>
+    </button>
+  </div>
+
+  <section class="timer-area" aria-label="Таймер аукциона">
+    <div class="screen-label">AUCTION TIMER</div>
+    <div class="timer" id="timer" aria-live="off">00:50</div>
+    <div class="timer-note" id="timerNote" aria-live="polite">Нажми AUCTION, чтобы начать отсчёт</div>
+    <div class="timer-actions">
+      <button id="stopBtn" type="button">Завершить</button>
+      <button id="resetBtn" type="button">Сбросить</button>
+    </div>
+  </section>
+  <p class="footer">Неофициальная цифровая имитация для личной игры.<br>Звук может потребовать первого нажатия на экран.</p>
+</main>
+<script>
+(() => {
+  const result = document.getElementById('result');
+  const screenLabel = document.getElementById('screenLabel');
+  const message = document.getElementById('message');
+  const timerEl = document.getElementById('timer');
+  const timerNote = document.getElementById('timerNote');
+  const buildBtn = document.getElementById('buildBtn');
+  const auctionBtn = document.getElementById('auctionBtn');
+  const stopBtn = document.getElementById('stopBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  let interval = null, remaining = 50, running = false, warned = false, audioCtx = null;
+
+  function beep(freq=880, duration=180) {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.value = freq; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + duration / 1000 + 0.03);
+    } catch (_) {}
+  }
+  function setResult(value, text, isTrain=false) {
+    result.textContent = value;
+    result.classList.toggle('train', isTrain);
+    screenLabel.textContent = 'BUILD RESULT';
+    message.textContent = text;
+  }
+  buildBtn.addEventListener('click', () => {
+    // 1, 2, 3, or the railway symbol, matching the four outcome types described for this unit.
+    const roll = Math.floor(Math.random() * 4);
+    if (roll === 3) {
+      setResult('🚆', 'Железная дорога!', true);
+    } else {
+      const n = roll + 1;
+      setResult(String(n), `Можно построить до ${n} блок${n === 1 ? '' : n === 2 ? 'а' : 'ов'}.`);
+    }
+    beep(roll === 3 ? 660 : 520 + roll * 150, 130);
+  });
+
+  function paintTimer() {
+    const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+    const s = String(remaining % 60).padStart(2, '0');
+    timerEl.textContent = `${m}:${s}`;
+  }
+  function stopTimer(completed=false) {
+    if (interval) clearInterval(interval);
+    interval = null; running = false;
+    timerEl.classList.remove('flash');
+    if (completed) {
+      remaining = 0; paintTimer();
+      timerNote.textContent = 'Время вышло!';
+      beep(980, 450); setTimeout(() => beep(740, 450), 220);
+    } else {
+      timerNote.textContent = 'Аукцион остановлен';
+    }
+  }
+  function startTimer() {
+    if (running) { stopTimer(false); timerNote.textContent = 'Аукцион остановлен'; return; }
+    if (remaining <= 0) remaining = 50;
+    running = true; warned = false;
+    timerNote.textContent = 'Аукцион идёт… нажми AUCTION ещё раз для остановки';
+    interval = setInterval(() => {
+      remaining = Math.max(0, remaining - 1);
+      paintTimer();
+      if (remaining === 5 && !warned) {
+        warned = true; timerEl.classList.add('flash'); timerNote.textContent = 'Осталось 5 секунд!';
+        beep(900, 150); setTimeout(() => beep(900, 150), 230);
+      }
+      if (remaining === 0) stopTimer(true);
+    }, 1000);
+  }
+  auctionBtn.addEventListener('click', startTimer);
+  stopBtn.addEventListener('click', () => {
+    if (running) stopTimer(false);
+    else { remaining = 0; paintTimer(); timerNote.textContent = 'Аукцион завершён'; }
+  });
+  resetBtn.addEventListener('click', () => {
+    if (interval) clearInterval(interval);
+    interval = null; running = false; warned = false; remaining = 50;
+    timerEl.classList.remove('flash'); paintTimer();
+    timerNote.textContent = 'Таймер готов к запуску';
+  });
+  paintTimer();
+})();
+</script>
+</body>
+</html>
