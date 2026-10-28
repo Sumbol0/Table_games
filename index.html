@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ru">
 <head>
@@ -7,362 +6,150 @@
 <meta name="theme-color" content="#17191d">
 <title>Настольные игры — Monopoly City и Шакал</title>
 <style>
-  :root {
-    color-scheme: dark;
-    --bg: #17191d;
-    --ink: #f5f5f2;
-    --muted: #aeb4bd;
-    --red: #ed342f;
-  }
-
-  * { box-sizing: border-box; }
-
+  :root { color-scheme: dark; --bg:#17191d; --panel:#262a30; --ink:#f5f5f2; --muted:#aeb4bd; --red:#ed342f; --orange:#ef8c27; }
+  * { box-sizing:border-box; }
   body {
-    margin: 0;
-    min-height: 100vh;
-    padding: 22px 16px max(22px, env(safe-area-inset-bottom));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(ellipse at top, #343941 0%, var(--bg) 58%);
-    color: var(--ink);
-    font-family: Arial, Helvetica, sans-serif;
+    margin:0; min-height:100vh; padding:22px 16px max(22px, env(safe-area-inset-bottom));
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at top, #343941 0%, var(--bg) 58%);
+    color:var(--ink); font-family:Arial,Helvetica,sans-serif;
   }
-
-  .device {
-    width: min(100%, 1000px);
-    border: 1px solid #4a4f57;
-    border-radius: 30px;
-    padding: 22px;
-    background: linear-gradient(145deg, #30343b, #1c1f24 65%);
-    box-shadow: 0 20px 55px #0008, inset 0 1px #ffffff18;
-  }
-
-  .app-layout { display: block; width: 100%; }
-  .main-content { width: 100%; max-width: 760px; min-width: 0; margin: 0 auto; }
-
+  .device { width:min(100%,1000px); border:1px solid #4a4f57; border-radius:30px; padding:22px;
+    background:linear-gradient(145deg,#30343b,#1c1f24 65%); box-shadow:0 20px 55px #0008,inset 0 1px #ffffff18; }
+  .app-layout { display:block; width:100%; }
+  .main-content { width:100%; max-width:760px; margin:0 auto; }
   .game-launcher {
-    position: fixed;
-    z-index: 1002;
-    top: max(16px, env(safe-area-inset-top));
-    right: 18px;
-    width: 52px;
-    height: 52px;
-    min-height: 52px;
-    padding: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    color: #fff;
-    background: linear-gradient(145deg, #454b55, #22262c);
-    border: 1px solid #68717e;
-    box-shadow: 0 7px 24px #0008, inset 0 1px #ffffff20;
+    position:fixed; z-index:1002; top:max(16px, env(safe-area-inset-top)); right:18px;
+    width:52px; height:52px; min-height:52px; padding:0; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:25px;
+    color:#fff; background:linear-gradient(145deg,#454b55,#22262c);
+    border:1px solid #68717e; box-shadow:0 7px 24px #0008, inset 0 1px #ffffff20;
   }
-
-  .game-launcher[aria-expanded="true"] {
-    background: linear-gradient(145deg, #ef9a35, #cf6717);
-  }
-
-  .menu-scrim {
-    position: fixed;
-    inset: 0;
-    z-index: 1000;
-    background: #0506098c;
-    backdrop-filter: blur(3px);
-  }
-
-  .menu-scrim[hidden] { display: none; }
-
+  .game-launcher[aria-expanded="true"] { background:linear-gradient(145deg,#ef9a35,#cf6717); }
+  .menu-scrim { position:fixed; inset:0; z-index:1000; background:#0506098c; backdrop-filter:blur(3px); }
+  .menu-scrim[hidden] { display:none; }
   .sidebar {
-    position: fixed;
-    z-index: 1001;
-    top: 78px;
-    right: 18px;
-    width: min(300px, calc(100vw - 28px));
-    background: #17191d;
-    border: 1px solid #515965;
-    border-radius: 20px;
-    padding: 15px;
-    box-shadow: 0 18px 55px #000b;
+    position:fixed; z-index:1001; top:78px; right:18px; width:min(300px,calc(100vw - 28px));
+    background:#17191d; border:1px solid #515965; border-radius:20px; padding:15px;
+    box-shadow:0 18px 55px #000b; transform-origin:top right;
+    transition:opacity .18s ease, transform .18s ease;
   }
-
-  .sidebar[hidden] { display: none; }
-
-  .sidebar-title {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    margin: 5px 8px 12px;
+  .sidebar[hidden] { display:none; }
+  .sidebar-title { font-size:10px; color:var(--muted); letter-spacing:2px; margin:5px 8px 12px; }
+  .tabs { display:flex; flex-direction:column; gap:8px; margin:0; }
+  .tab { display:flex; align-items:center; gap:10px; text-align:left; min-height:58px; border-radius:12px; border:1px solid #4a4f57; background:#22262c; color:#d5d9df; box-shadow:none; padding:10px; font-size:13px; }
+  .tab-art { font-size:25px; width:30px; text-align:center; flex-shrink:0; }
+  .tab-name { display:block; font-weight:800; }
+  .tab-caption { display:block; margin-top:3px; font-size:9px; color:inherit; opacity:.72; }
+  .main-content { min-width:0; }
+  .main-content > .brand:first-child { margin-top:3px; }
+  .brand { text-align:center; font-weight:900; font-style:italic; letter-spacing:1.4px; font-size:22px; }
+  .brand span { color:var(--red); }
+  .subtitle { text-align:center; color:var(--muted); font-size:11px; letter-spacing:2px; margin-top:5px; }
+  .screen { margin:24px 0 18px; min-height:170px; padding:20px 14px; border-radius:14px;
+    background:#e8e6d9; color:#25272b; border:7px solid #111316; text-align:center;
+    display:flex; flex-direction:column; justify-content:center; align-items:center; }
+  .screen-label { font-size:11px; letter-spacing:2px; font-weight:bold; color:#555; }
+  .result { font-size:76px; line-height:1.05; font-weight:900; margin:8px 0; }
+  .result.train { font-size:56px; }
+  .message { min-height:20px; font-size:13px; color:#45474b; }
+  .buttons { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  button { min-height:110px; border:0; border-radius:17px; color:white; font:inherit; font-weight:900;
+    cursor:pointer; box-shadow:inset 0 -5px #0003,0 5px 0 #111; padding:14px 8px; touch-action:manipulation; }
+  button:active { transform:translateY(3px); box-shadow:inset 0 -2px #0003,0 2px 0 #111; }
+  button:focus-visible { outline:3px solid white; outline-offset:4px; }
+  .build { background:linear-gradient(#ef9a35,#cf6717); }
+  .auction { background:linear-gradient(#f0524b,#bd2425); }
+  .icon { display:block; font-size:29px; margin-bottom:8px; }
+  .button-sub { display:block; font-size:10px; letter-spacing:1px; margin-top:5px; opacity:.85; }
+  .timer-area { margin-top:17px; padding:15px; border-radius:14px; background:#111316; text-align:center; }
+  .timer { font-size:39px; font-weight:900; font-variant-numeric:tabular-nums; }
+  .timer-note { font-size:12px; color:var(--muted); min-height:18px; margin:4px 0 12px; }
+  .timer-actions { display:flex; gap:9px; }
+  .timer-actions button { min-height:42px; flex:1; border-radius:9px; background:#41464f; box-shadow:none; font-size:13px; }
+  .timer-actions button:active { transform:scale(.98); }
+  .footer { color:#939aa4; text-align:center; font-size:10px; line-height:1.5; margin:18px 4px 0; }
+  .tab.active { background:#e9e5d5; color:#22252a; border-color:#e9e5d5; }
+  .game-panel[hidden] { display:none; }
+  .shakal-panel { width:100%; }
+  .shakal-head { text-align:center; margin:4px 0 16px; }
+  .shakal-head h2 { margin:0 0 6px; font-size:24px; }
+  .shakal-head p { margin:0; color:var(--muted); font-size:13px; line-height:1.5; }
+  .board-controls { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin:16px 0; }
+  .board-controls button { min-height:44px; border-radius:10px; padding:10px 16px; background:linear-gradient(#ef9a35,#cf6717); box-shadow:inset 0 -3px #0003,0 3px 0 #111; }
+  .board-info { color:var(--muted); font-size:12px; text-align:center; margin:8px 0 12px; }
+  .board-wrap { width:100%; max-width:100%; overflow:hidden; padding:6px; background:#111316; border-radius:16px; }
+  .board { display:grid; grid-template-columns:repeat(var(--cols, 15), minmax(0, 1fr)); gap:clamp(1px, 0.25vw, 3px); width:min(100%, 820px); min-width:0; margin:auto; }
+  .tile { aspect-ratio:1; min-width:0; border:1px solid #a9a58b; border-radius:clamp(1px, 0.25vw, 4px); background:linear-gradient(145deg,#c9c29b,#9c956f); box-shadow:inset 0 1px #fff6; display:flex; align-items:center; justify-content:center; color:#343323; font-size:clamp(5px,1.2vw,12px); }
+  .tile.land { background:linear-gradient(145deg,#c9c29b,#9c956f); }
+  .tile.coast { background:linear-gradient(145deg,#e0d4a2,#b0a16e); border-color:#e5d7a1; }
+  .void { aspect-ratio:1; min-width:0; visibility:hidden; }
+  .shakal-note { color:#aeb4bd; font-size:12px; line-height:1.5; margin:14px 4px 0; }
+  @media (max-width:650px) {
+    body { padding:12px 8px max(12px, env(safe-area-inset-bottom)); align-items:center; }
+    .device { padding:13px; border-radius:22px; margin:auto 0; }
+    .app-layout { display:block; }
+    .sidebar { top:74px; right:12px; padding:12px; }
+    .sidebar-title { margin-bottom:8px; }
+    .tabs { display:flex; }
+    .tab { min-height:56px; padding:8px; }
+    .tab-art { font-size:22px; width:24px; }
+    .game-launcher { right:12px; width:48px; height:48px; min-height:48px; }
+    .board-wrap { padding:3px; }
+    .board { gap:1px; width:100%; }
+    .tile { border-radius:1px; border-width:0.5px; }
   }
-
-  .tabs { display: flex; flex-direction: column; gap: 8px; margin: 0; }
-
-  .tab {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-align: left;
-    min-height: 58px;
-    border-radius: 12px;
-    border: 1px solid #4a4f57;
-    background: #22262c;
-    color: #d5d9df;
-    box-shadow: none;
-    padding: 10px;
-    font-size: 13px;
-  }
-
-  .tab-art { font-size: 25px; width: 30px; text-align: center; flex-shrink: 0; }
-  .tab-name { display: block; font-weight: 800; }
-  .tab-caption { display: block; margin-top: 3px; font-size: 9px; opacity: .72; }
-
-  .brand {
-    text-align: center;
-    font-weight: 900;
-    font-style: italic;
-    letter-spacing: 1.4px;
-    font-size: 22px;
-  }
-
-  .brand span { color: var(--red); }
-
-  .subtitle {
-    text-align: center;
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-top: 5px;
-  }
-
-  .screen {
-    margin: 24px 0 18px;
-    min-height: 170px;
-    padding: 20px 14px;
-    border-radius: 14px;
-    background: #e8e6d9;
-    color: #25272b;
-    border: 7px solid #111316;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .screen-label { font-size: 11px; letter-spacing: 2px; font-weight: bold; color: #555; }
-  .result { font-size: 76px; line-height: 1.05; font-weight: 900; margin: 8px 0; }
-  .result.train { font-size: 56px; }
-  .message { min-height: 20px; font-size: 13px; color: #45474b; }
-  .buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  button {
-    min-height: 110px;
-    border: 0;
-    border-radius: 17px;
-    color: white;
-    font: inherit;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: inset 0 -5px #0003, 0 5px 0 #111;
-    padding: 14px 8px;
-    touch-action: manipulation;
-  }
-
-  button:active { transform: translateY(3px); box-shadow: inset 0 -2px #0003, 0 2px 0 #111; }
-  button:focus-visible { outline: 3px solid white; outline-offset: 4px; }
-  .build { background: linear-gradient(#ef9a35, #cf6717); }
-  .auction { background: linear-gradient(#f0524b, #bd2425); }
-  .icon { display: block; font-size: 29px; margin-bottom: 8px; }
-  .button-sub { display: block; font-size: 10px; letter-spacing: 1px; margin-top: 5px; opacity: .85; }
-
-  .timer-area {
-    margin-top: 17px;
-    padding: 15px;
-    border-radius: 14px;
-    background: #111316;
-    text-align: center;
-  }
-
-  .timer { font-size: 39px; font-weight: 900; font-variant-numeric: tabular-nums; }
-  .timer-note { font-size: 12px; color: var(--muted); min-height: 18px; margin: 4px 0 12px; }
-  .timer-actions { display: flex; gap: 9px; }
-  .timer-actions button { min-height: 42px; flex: 1; border-radius: 9px; background: #41464f; box-shadow: none; font-size: 13px; }
-  .timer-actions button:active { transform: scale(.98); }
-  .footer { color: #939aa4; text-align: center; font-size: 10px; line-height: 1.5; margin: 18px 4px 0; }
-  .tab.active { background: #e9e5d5; color: #22252a; border-color: #e9e5d5; }
-  .game-panel[hidden] { display: none; }
-  .shakal-panel { width: 100%; }
-
-  .shakal-head { text-align: center; margin: 4px 0 16px; }
-  .shakal-head h2 { margin: 0 0 6px; font-size: 24px; }
-  .shakal-head p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
-
-  .board-controls {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 12px 0;
-  }
-
-  .board-controls button {
-    min-height: 44px;
-    border-radius: 10px;
-    padding: 10px 16px;
-    background: linear-gradient(#ef9a35, #cf6717);
-    box-shadow: inset 0 -3px #0003, 0 3px 0 #111;
-  }
-
-  .board-info {
-    color: var(--muted);
-    font-size: 12px;
-    text-align: center;
-    margin: 8px 0 12px;
-  }
-
-  /* Поле полностью помещается по ширине, без горизонтальной прокрутки */
-  .board-wrap {
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    padding: 6px;
-    background: #111316;
-    border-radius: 12px;
-  }
-
-  .board {
-    display: grid;
-    grid-template-columns: repeat(var(--cols, 15), minmax(0, 1fr));
-    gap: clamp(1px, 0.25vw, 3px);
-    width: min(100%, 820px);
-    min-width: 0;
-    margin: auto;
-  }
-
-  .tile {
-    aspect-ratio: 1;
-    min-width: 0;
-    border: 1px solid #a9a58b;
-    border-radius: clamp(1px, 0.25vw, 4px);
-    background: linear-gradient(145deg, #c9c29b, #9c956f);
-    box-shadow: inset 0 1px #fff6;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #343323;
-    font-size: clamp(5px, 1.2vw, 12px);
-  }
-
-  .tile.land { background: linear-gradient(145deg, #c9c29b, #9c956f); }
-  .tile.coast { background: linear-gradient(145deg, #e0d4a2, #b0a16e); border-color: #e5d7a1; }
-  .void { aspect-ratio: 1; min-width: 0; visibility: hidden; }
-
-  .shakal-note {
-    color: #aeb4bd;
-    font-size: 12px;
-    line-height: 1.5;
-    margin: 12px 4px 0;
-  }
-
-  @media (max-width: 650px) {
-    body { padding: 12px 8px max(12px, env(safe-area-inset-bottom)); align-items: center; }
-    .device { padding: 13px; border-radius: 22px; margin: auto 0; }
-    .sidebar { top: 74px; right: 12px; padding: 12px; }
-    .sidebar-title { margin-bottom: 8px; }
-    .tab { min-height: 56px; padding: 8px; }
-    .tab-art { font-size: 22px; width: 24px; }
-    .game-launcher { right: 12px; width: 48px; height: 48px; min-height: 48px; }
-    .board-wrap { padding: 3px; }
-    .board { gap: 1px; width: 100%; }
-    .tile { border-radius: 1px; border-width: 0.5px; }
-    .shakal-head { margin-bottom: 10px; }
-    .board-info { margin-bottom: 8px; }
-  }
-
-  .flash { animation: flash .5s ease-in-out infinite alternate; }
-  @keyframes flash { from { color: #ffaaa5; } to { color: #fff; } }
-  @media (prefers-reduced-motion: reduce) { .flash { animation: none; } }
+  .flash { animation:flash .5s ease-in-out infinite alternate; }
+  @keyframes flash { from { color:#ffaaa5; } to { color:#fff; } }
+  @media (prefers-reduced-motion:reduce) { .flash { animation:none; } button { transition:none; } }
 </style>
 </head>
 <body>
 <button class="game-launcher" id="gameLauncher" type="button" aria-label="Открыть список игр" aria-controls="gameMenu" aria-expanded="false">🎮</button>
 <div class="menu-scrim" id="menuScrim" hidden></div>
-
 <main class="device" aria-label="Board game tools">
   <div class="brand">TABLE <span>GAMES</span></div>
   <div class="subtitle">DIGITAL BOARD GAME TOOLS</div>
-
   <div class="app-layout">
     <aside class="sidebar" id="gameMenu" aria-label="Список игр" hidden>
       <div class="sidebar-title">YOUR GAMES</div>
       <nav class="tabs" aria-label="Choose a game">
-        <button class="tab active" id="tabMonopoly" type="button" aria-selected="true">
-          <span class="tab-art">🦜</span>
-          <span><span class="tab-name">Monopoly City</span><span class="tab-caption">TRADING UNIT</span></span>
-        </button>
-        <button class="tab" id="tabShakal" type="button" aria-selected="false">
-          <span class="tab-art">💀</span>
-          <span><span class="tab-name">Jackal</span><span class="tab-caption">ISLAND GENERATOR</span></span>
-        </button>
+        <button class="tab active" id="tabMonopoly" type="button" aria-selected="true"><span class="tab-art" aria-hidden="true">💵</span><span><span class="tab-name">Monopoly City</span><span class="tab-caption">TRADING UNIT</span></span></button>
+        <button class="tab" id="tabShakal" type="button" aria-selected="false"><span class="tab-art">💀</span><span><span class="tab-name">Jackal</span><span class="tab-caption">ISLAND GENERATOR</span></span></button>
       </nav>
     </aside>
-
     <div class="main-content">
-      <section class="game-panel" id="monopolyPanel">
-        <div class="brand">MONOPOLY <span>CITY</span></div>
-        <div class="subtitle">ELECTRONIC TRADING UNIT</div>
+  <section class="game-panel" id="monopolyPanel">
+    <div class="brand">MONOPOLY <span>CITY</span></div>
+    <div class="subtitle">ELECTRONIC TRADING UNIT</div>
+    <section class="screen" aria-live="polite">
+      <div class="screen-label" id="screenLabel">READY</div>
+      <div class="result" id="result">—</div>
+      <div class="message" id="message">Нажми BUILD для результата строительства</div>
+    </section>
+    <div class="buttons">
+      <button class="build" id="buildBtn" type="button"><span class="icon">🏗️</span>BUILD<span class="button-sub">СТРОИТЕЛЬСТВО</span></button>
+      <button class="auction" id="auctionBtn" type="button"><span class="icon">⏱</span>AUCTION<span class="button-sub">АУКЦИОН · 50 СЕК.</span></button>
+    </div>
+    <section class="timer-area" aria-label="Таймер аукциона">
+      <div class="screen-label">AUCTION TIMER</div>
+      <div class="timer" id="timer" aria-live="off">00:50</div>
+      <div class="timer-note" id="timerNote" aria-live="polite">Нажми AUCTION, чтобы начать отсчёт</div>
+      <div class="timer-actions"><button id="stopBtn" type="button">Завершить</button><button id="resetBtn" type="button">Сбросить</button></div>
+    </section>
+    <p class="footer">Неофициальная цифровая имитация для личной игры.<br>Звук может потребовать первого нажатия на экран.</p>
+  </section>
 
-        <section class="screen" aria-live="polite">
-          <div class="screen-label" id="screenLabel">READY</div>
-          <div class="result" id="result">—</div>
-          <div class="message" id="message">Нажми BUILD для результата строительства</div>
-        </section>
-
-        <div class="buttons">
-          <button class="build" id="buildBtn" type="button">
-            <span class="icon">🏗️</span>BUILD
-            <span class="button-sub">СТРОИТЕЛЬСТВО</span>
-          </button>
-          <button class="auction" id="auctionBtn" type="button">
-            <span class="icon">⏱</span>AUCTION
-            <span class="button-sub">АУКЦИОН · 50 СЕК.</span>
-          </button>
-        </div>
-
-        <section class="timer-area" aria-label="Таймер аукциона">
-          <div class="screen-label">AUCTION TIMER</div>
-          <div class="timer" id="timer" aria-live="off">00:50</div>
-          <div class="timer-note" id="timerNote" aria-live="polite">Нажми AUCTION, чтобы начать отсчёт</div>
-          <div class="timer-actions">
-            <button id="stopBtn" type="button">Завершить</button>
-            <button id="resetBtn" type="button">Сбросить</button>
-          </div>
-        </section>
-
-        <p class="footer">Неофициальная цифровая имитация для личной игры.<br>Звук может потребовать первого нажатия на экран.</p>
-      </section>
-
-      <section class="game-panel shakal-panel" id="shakalPanel" hidden>
-        <div class="shakal-head">
-          <h2>💀 Jackal</h2>
-          <p>Генератор причудливых островов</p>
-        </div>
-        <div class="board-info" id="boardInfo">Сгенерируй новый остров из 117 квадратов.</div>
-        <div class="board-wrap">
-          <div class="board" id="board" role="img" aria-label="Случайное игровое поле Шакала"></div>
-        </div>
-        <div class="board-controls">
-          <button id="generateBoard" type="button">Generate island</button>
-        </div>
-        <p class="shakal-note">Каждый остров состоит ровно из 117 активных клеток. У каждой клетки есть минимум 2 соседние клетки, соприкасающиеся с ней полной стороной. Контур и габариты меняются при каждой генерации. Игровые тайлы и корабли пока не расставляются.</p>
-      </section>
+  <section class="game-panel shakal-panel" id="shakalPanel" hidden>
+    <div class="shakal-head"><h2>💀 Jackal</h2><p>Генератор причудливых островов</p></div>
+    <div class="board-info" id="boardInfo">Сгенерируй новый остров из 117 квадратов.</div>
+    <div class="board-wrap"><div class="board" id="board" role="img" aria-label="Случайное игровое поле Шакала"></div></div>
+    <div class="board-controls"><button id="generateBoard" type="button">Generate island</button></div>
+    <p class="shakal-note">Каждый остров состоит ровно из 117 активных клеток. У каждой клетки есть минимум 2 соседние клетки, соприкасающиеся с ней полной стороной — одиночных выступов и клеток, соединённых только одним боком, не будет. Внешний контур и габариты меняются при каждой генерации; форма не ограничена рамкой 11×11. Игровые тайлы и корабли пока не расставляются.</p>
+  </section>
     </div>
   </div>
 </main>
-
 <script>
 (() => {
   const result = document.getElementById('result');
@@ -374,50 +161,37 @@
   const auctionBtn = document.getElementById('auctionBtn');
   const stopBtn = document.getElementById('stopBtn');
   const resetBtn = document.getElementById('resetBtn');
+  let interval = null, remaining = 50, running = false, warned = false, audioCtx = null;
 
-  let interval = null;
-  let remaining = 50;
-  let running = false;
-  let warned = false;
-  let audioCtx = null;
-
-  function beep(freq = 880, duration = 180) {
+  function beep(freq=880, duration=180) {
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
-
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-
+      osc.frequency.value = freq; osc.type = 'sine';
       gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.15, audioCtx.currentTime + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration / 1000 + 0.03);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(); osc.stop(audioCtx.currentTime + duration / 1000 + 0.03);
     } catch (_) {}
   }
-
-  function setResult(value, text, isTrain = false) {
+  function setResult(value, text, isTrain=false) {
     result.textContent = value;
     result.classList.toggle('train', isTrain);
     screenLabel.textContent = 'BUILD RESULT';
     message.textContent = text;
   }
-
   buildBtn.addEventListener('click', () => {
+    // 1, 2, 3, or the railway symbol, matching the four outcome types described for this unit.
     const roll = Math.floor(Math.random() * 4);
-
     if (roll === 3) {
       setResult('🚆', 'Железная дорога!', true);
     } else {
       const n = roll + 1;
       setResult(String(n), `Можно построить до ${n} блок${n === 1 ? '' : n === 2 ? 'а' : 'ов'}.`);
     }
-
     beep(roll === 3 ? 660 : 520 + roll * 150, 130);
   });
 
@@ -426,81 +200,51 @@
     const s = String(remaining % 60).padStart(2, '0');
     timerEl.textContent = `${m}:${s}`;
   }
-
-  function stopTimer(completed = false) {
+  function stopTimer(completed=false) {
     if (interval) clearInterval(interval);
-    interval = null;
-    running = false;
+    interval = null; running = false;
     timerEl.classList.remove('flash');
-
     if (completed) {
-      remaining = 0;
-      paintTimer();
+      remaining = 0; paintTimer();
       timerNote.textContent = 'Время вышло!';
-      beep(980, 450);
-      setTimeout(() => beep(740, 450), 220);
+      beep(980, 450); setTimeout(() => beep(740, 450), 220);
     } else {
       timerNote.textContent = 'Аукцион остановлен';
     }
   }
-
   function startTimer() {
-    if (running) {
-      stopTimer(false);
-      timerNote.textContent = 'Аукцион остановлен';
-      return;
-    }
-
+    if (running) { stopTimer(false); timerNote.textContent = 'Аукцион остановлен'; return; }
     if (remaining <= 0) remaining = 50;
-    running = true;
-    warned = false;
+    running = true; warned = false;
     timerNote.textContent = 'Аукцион идёт… нажми AUCTION ещё раз для остановки';
-
     interval = setInterval(() => {
       remaining = Math.max(0, remaining - 1);
       paintTimer();
-
       if (remaining === 5 && !warned) {
-        warned = true;
-        timerEl.classList.add('flash');
-        timerNote.textContent = 'Осталось 5 секунд!';
-        beep(900, 150);
-        setTimeout(() => beep(900, 150), 230);
+        warned = true; timerEl.classList.add('flash'); timerNote.textContent = 'Осталось 5 секунд!';
+        beep(900, 150); setTimeout(() => beep(900, 150), 230);
       }
-
       if (remaining === 0) stopTimer(true);
     }, 1000);
   }
-
   auctionBtn.addEventListener('click', startTimer);
-
   stopBtn.addEventListener('click', () => {
     if (running) stopTimer(false);
-    else {
-      remaining = 0;
-      paintTimer();
-      timerNote.textContent = 'Аукцион завершён';
-    }
+    else { remaining = 0; paintTimer(); timerNote.textContent = 'Аукцион завершён'; }
   });
-
   resetBtn.addEventListener('click', () => {
     if (interval) clearInterval(interval);
-    interval = null;
-    running = false;
-    warned = false;
-    remaining = 50;
-    timerEl.classList.remove('flash');
-    paintTimer();
+    interval = null; running = false; warned = false; remaining = 50;
+    timerEl.classList.remove('flash'); paintTimer();
     timerNote.textContent = 'Таймер готов к запуску';
   });
-
   paintTimer();
 
+  // Переключение между игровыми помощниками.
   const tabMonopoly = document.getElementById('tabMonopoly');
   const tabShakal = document.getElementById('tabShakal');
   const monopolyPanel = document.getElementById('monopolyPanel');
   const shakalPanel = document.getElementById('shakalPanel');
-
   function selectGame(game) {
     const isMonopoly = game === 'monopoly';
     monopolyPanel.hidden = !isMonopoly;
@@ -508,173 +252,118 @@
     tabMonopoly.classList.toggle('active', isMonopoly);
     tabShakal.classList.toggle('active', !isMonopoly);
     tabMonopoly.setAttribute('aria-selected', String(isMonopoly));
-    tabShakal.setAttribute('aria-selected', String(!isMonopoly);
+    tabShakal.setAttribute('aria-selected', String(!isMonopoly));
   }
+  tabMonopoly.addEventListener('click', () => { selectGame('monopoly'); closeGameMenu(); });
+  tabShakal.addEventListener('click', () => { selectGame('shakal'); closeGameMenu(); });
 
-  tabMonopoly.addEventListener('click', () => {
-    selectGame('monopoly');
-    closeGameMenu();
-  });
-
-  tabShakal.addEventListener('click', () => {
-    selectGame('shakal');
-    closeGameMenu();
-  });
-
+  // Floating game picker sits above the page and never changes the centered panel layout.
   const gameLauncher = document.getElementById('gameLauncher');
   const gameMenu = document.getElementById('gameMenu');
   const menuScrim = document.getElementById('menuScrim');
-
   function openGameMenu() {
     gameMenu.hidden = false;
     menuScrim.hidden = false;
     gameLauncher.setAttribute('aria-expanded', 'true');
     gameLauncher.setAttribute('aria-label', 'Закрыть список игр');
   }
-
   function closeGameMenu() {
     gameMenu.hidden = true;
     menuScrim.hidden = true;
     gameLauncher.setAttribute('aria-expanded', 'false');
     gameLauncher.setAttribute('aria-label', 'Открыть список игр');
   }
-
-  gameLauncher.addEventListener('click', () => {
-    if (gameMenu.hidden) openGameMenu();
-    else closeGameMenu();
-  });
-
+  gameLauncher.addEventListener('click', () => gameMenu.hidden ? openGameMenu() : closeGameMenu());
   menuScrim.addEventListener('click', closeGameMenu);
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeGameMenu(); });
 
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeGameMenu();
-  });
-
+  // Generate a connected polyomino containing exactly 117 playable squares.
+  // The invisible placeholders only preserve the irregular outline on the CSS grid.
   const board = document.getElementById('board');
   const boardInfo = document.getElementById('boardInfo');
   const generateBoardBtn = document.getElementById('generateBoard');
-
   const TOTAL_TILES = 117;
   const CANVAS = 25;
   const keyOf = (r, c) => `${r},${c}`;
   const parseKey = (key) => key.split(',').map(Number);
-
   function makeIsland() {
+    // Build the island from overlapping 2x2 blocks. Every square belongs to
+    // at least one complete 2x2 block, so it always has at least two
+    // side-neighbours. Restart a trial if it cannot reach exactly 117 cells.
     for (let attempt = 0; attempt < 300; attempt++) {
       const cells = new Set();
       const startR = 8 + Math.floor(Math.random() * 5);
       const startC = 8 + Math.floor(Math.random() * 5);
-
       for (let dr = 0; dr < 2; dr++) {
-        for (let dc = 0; dc < 2; dc++) {
-          cells.add(keyOf(startR + dr, startC + dc));
-        }
+        for (let dc = 0; dc < 2; dc++) cells.add(keyOf(startR + dr, startC + dc));
       }
 
       while (cells.size < TOTAL_TILES) {
         const remaining = TOTAL_TILES - cells.size;
         const candidates = [];
-
+        // Candidate 2x2 blocks near the current island. A block must overlap
+        // the island, and may add only as many cells as remain to reach 117.
         for (let r = 1; r < CANVAS - 2; r++) {
           for (let c = 1; c < CANVAS - 2; c++) {
-            const block = [
-              keyOf(r, c),
-              keyOf(r + 1, c),
-              keyOf(r, c + 1),
-              keyOf(r + 1, c + 1)
-            ];
-
+            const block = [keyOf(r,c), keyOf(r+1,c), keyOf(r,c+1), keyOf(r+1,c+1)];
             const overlap = block.filter(k => cells.has(k)).length;
             const added = 4 - overlap;
-
             if (overlap > 0 && added > 0 && added <= remaining) {
-              const touching = block.reduce((n, k) => {
-                const [rr, cc] = parseKey(k);
-                return n + [
-                  [rr - 1, cc],
-                  [rr + 1, cc],
-                  [rr, cc - 1],
-                  [rr, cc + 1]
-                ].filter(([nr, nc]) => cells.has(keyOf(nr, nc))).length;
+              const touching = block.reduce((n,k) => {
+                const [rr,cc] = parseKey(k);
+                return n + [[rr-1,cc],[rr+1,cc],[rr,cc-1],[rr,cc+1]]
+                  .filter(([nr,nc]) => cells.has(keyOf(nr,nc))).length;
               }, 0);
-
+              // Prefer modest overlaps for a less regular outline, with enough
+              // randomness to produce different silhouettes on each click.
               const score = (4 - overlap) * 1.1 + Math.random() * 4 + touching * 0.04;
-              candidates.push({ block, added, score });
+              candidates.push({block, added, score});
             }
           }
         }
-
         if (!candidates.length) break;
-        candidates.sort((x, y) => y.score - x.score);
+        candidates.sort((x,y) => y.score - x.score);
         const pick = candidates[Math.floor(Math.random() * Math.min(candidates.length, 12))];
         pick.block.forEach(k => cells.add(k));
       }
-
       if (cells.size === TOTAL_TILES) return cells;
     }
-
+    // Guaranteed fallback: standard 11x11 island without its four corners.
     const fallback = new Set();
-
-    for (let r = 0; r < 11; r++) {
-      for (let c = 0; c < 11; c++) {
-        if (!((r === 0 || r === 10) && (c === 0 || c === 10))) {
-          fallback.add(keyOf(r + 7, c + 7));
-        }
-      }
+    for (let r = 0; r < 11; r++) for (let c = 0; c < 11; c++) {
+      if (!((r === 0 || r === 10) && (c === 0 || c === 10))) fallback.add(keyOf(r + 7, c + 7));
     }
-
     return fallback;
   }
-
   function renderBoard() {
     const cells = makeIsland();
     const coords = [...cells].map(parseKey);
     const minR = Math.min(...coords.map(([r]) => r));
     const maxR = Math.max(...coords.map(([r]) => r));
-    const minC = Math.min(...coords.map(([, c]) => c));
-    const maxC = Math.max(...coords.map(([, c]) => c));
-    const rows = maxR - minR + 1;
-    const cols = maxC - minC + 1;
-    const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-
-    const minNeighbors = Math.min(
-      ...coords.map(([r, c]) =>
-        directions.filter(([dr, dc]) => cells.has(keyOf(r + dr, c + dc))).length
-      )
-    );
-
+    const minC = Math.min(...coords.map(([,c]) => c));
+    const maxC = Math.max(...coords.map(([,c]) => c));
+    const rows = maxR-minR+1;
+    const cols = maxC-minC+1;
+    const directions = [[-1,0],[1,0],[0,-1],[0,1]];
+    const minNeighbors = Math.min(...coords.map(([r,c]) => directions.filter(([dr,dc]) => cells.has(keyOf(r+dr,c+dc))).length));
     board.style.setProperty('--cols', cols);
     board.replaceChildren();
-
-    for (let r = minR; r <= maxR; r++) {
-      for (let c = minC; c <= maxC; c++) {
-        const tile = document.createElement('div');
-
-        if (!cells.has(keyOf(r, c))) {
-          tile.className = 'void';
-          tile.setAttribute('aria-hidden', 'true');
-        } else {
-          tile.className = 'tile land';
-
-          const adjacentEmpty = [
-            [r - 1, c],
-            [r + 1, c],
-            [r, c - 1],
-            [r, c + 1]
-          ].some(([nr, nc]) => !cells.has(keyOf(nr, nc)));
-
-          if (adjacentEmpty) tile.classList.add('coast');
-          tile.setAttribute('aria-label', 'Клетка острова');
-        }
-
-        board.appendChild(tile);
+    for (let r=minR;r<=maxR;r++) for (let c=minC;c<=maxC;c++) {
+      const tile = document.createElement('div');
+      if (!cells.has(keyOf(r,c))) {
+        tile.className = 'void';
+        tile.setAttribute('aria-hidden', 'true');
+      } else {
+        tile.className = 'tile land';
+        const adjacentEmpty = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]]
+          .some(([nr,nc]) => !cells.has(keyOf(nr,nc)));
+        if (adjacentEmpty) tile.classList.add('coast');
+        tile.setAttribute('aria-label', 'Клетка острова');
       }
+      board.appendChild(tile);
     }
-
-    boardInfo.textContent =
-      `Активных клеток: ${cells.size} из 117 · Контур: ${rows} × ${cols} · Минимум соседей по стороне: ${minNeighbors}`;
+    boardInfo.textContent = `Активных клеток: ${cells.size} из 117 · Контур: ${rows} × ${cols} · Минимум соседей по стороне: ${minNeighbors}`;
   }
-
   generateBoardBtn.addEventListener('click', renderBoard);
   renderBoard();
 })();
